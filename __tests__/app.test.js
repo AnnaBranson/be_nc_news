@@ -3,6 +3,7 @@ const seed = require ("../db/seeds/seed")
 const data = require ("../db/data/test-data")
 const request = require ("supertest")
 const app = require("../app")
+const endpoints = require("../endpoints.json")
 
 beforeEach(() => {
     return seed(data)
@@ -23,6 +24,18 @@ describe("all bad URLs",()=>{
         }) 
      })
     })
+})
+
+describe("/api",()=>{
+        test("GET: 200 - response with an object detailing all available endpoints", () => {
+        return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+        expect(body.endpoints).toEqual(endpoints)
+        }) 
+     })
+    
 })
 
 
