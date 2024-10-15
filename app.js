@@ -4,7 +4,7 @@ const { getTopics } = require ("./controllers/topics.controller")
 const endpoints = require ("./endpoints.json")
 const { getArticlesById } = require ("./controllers/articles.controller")
 const { getArticles } = require ("./controllers/articles.controller")
-const { getAllComments } = require ("./controllers/articles.controller")
+const { getAllComments } = require ("./controllers/comments.controller")
 
 
 app.get("/api", (request, response) => {

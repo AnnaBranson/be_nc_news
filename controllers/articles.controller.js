@@ -30,8 +30,3 @@ exports.getArticles = (request, response, next) => {
     
  }
 
- exports.getAllComments = (request, response, next) =>{ selectAllComments()
-        console.log('hello From controller')
-
- }
-
