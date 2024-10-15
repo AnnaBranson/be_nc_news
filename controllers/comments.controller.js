@@ -1,5 +1,6 @@
-const { selectAllComments } = require("../models/comments.model");
+const { selectAllComments, createComments } = require("../models/comments.model");
 const { selectArticlesById } = require("../models/articles.model");
+
 
 exports.getAllComments = (request, response, next) => { 
     const { article_id } = request.params;
@@ -21,3 +22,8 @@ exports.getAllComments = (request, response, next) => {
             next(err);  
         });
 };
+
+exports.postComments = (request, response, next) => {
+    createComments()
+    console.log("hello from controller")
+}

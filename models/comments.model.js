@@ -1,5 +1,6 @@
 const db = require("../db/connection")
 
+
 exports.selectAllComments = (article_id) => {
 
    return db
@@ -9,5 +10,9 @@ exports.selectAllComments = (article_id) => {
     return rows;
    })
     }
+
+exports.createComments = () => {
+   console.log("hello from model")
+}
 
     

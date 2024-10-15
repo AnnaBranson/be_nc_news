@@ -127,7 +127,9 @@ describe("api/articles/:article_id ", () => {
 })
 
 describe("api/articles/:article_id/comments ", () => {
-    test("GET: 200 response with an array of comments from an article with a given article ID", () => {
+    describe("GET/api/articles/:article_id/comments ",()=>{
+        
+        test("GET: 200 response with an array of comments from an article with a given article ID", () => {
         return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
@@ -140,49 +142,71 @@ describe("api/articles/:article_id/comments ", () => {
                     author: expect.any(String),
                     body: expect.any(String),
                     article_id: expect.any(Number)
+                })
             })
-            
-            })
-         })
-    })
-    test("GET: 200 response with an array of comments from an article with a given article ID ordered by data created with the most recent first by default", () => {
-        return request(app)
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({ body }) => {
-            expect(body.comments).toBeSortedBy("created_at", {descending: true})
-            })
-            
-            })
-    test("GET: 400 response when passed an article_id that is not a number", () => {
-        return request(app)
-            .get("/api/articles/not-a-number/comments")
-            .expect(400)
-            .then(({ body }) => {
-                expect(body.msg).toBe("Bad Request!")
+        })
                     })
-                    
+        test("GET: 200 response with an array of comments from an article with a given article ID ordered by data created with the most recent first by default", () => {
+                    return request(app)
+                    .get("/api/articles/1/comments")
+                    .expect(200)
+                    .then(({ body }) => {
+                        expect(body.comments).toBeSortedBy("created_at", {descending: true})
+                        })
+                        
                     })
-    test("GET: 404 response when passed a number that does not exist on our table", () => {
-        return request(app)
-            .get("/api/articles/999/comments")
-            .expect(404)
-            .then(({ body }) => {
-                expect(body.msg).toBe("Not Found!")
-                  })
-                                    
+        test("GET: 400 response when passed an article_id that is not a number", () => {
+                    return request(app)
+                        .get("/api/articles/not-a-number/comments")
+                        .expect(400)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe("Bad Request!")
+                                })
+                                
+                    })
+        test("GET: 404 response when passed a number that does not exist on our table", () => {
+                    return request(app)
+                        .get("/api/articles/999/comments")
+                        .expect(404)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe("Not Found!")
+                              })
+                                                
+                    })
+        test("GET: 200 response with an empty array if the article_id is valid but there are no comments on that article", () => {
+                    return request(app)
+                    .get("/api/articles/2/comments")
+                    .expect(200)
+                    .then(({ body }) => {
+                    expect(Array.isArray(body.comments)).toBe(true)
+                    expect(body.comments).toHaveLength(0)
+                                })
+                                
+                    })
             })
-    test("GET: 200 response with an empty array if the article_id is valid but there are no comments on that article", () => {
-        return request(app)
-        .get("/api/articles/2/comments")
-        .expect(200)
-        .then(({ body }) => {
-        expect(Array.isArray(body.comments)).toBe(true)
-        expect(body.comments).toHaveLength(0)
-                    })
-                    
-                    })
-    })
+         
+    // describe("POST/api/articles/:article_id/comments ",()=>{
+
+    //     test("", () => {
+    //         return request(app)
+    //         .get("")
+    //         .expect(200)
+    //         .then(({ body }) => {
+              
+    //         })
+        // add comment to comment array
+        // comment is an object that has key of username and body (both strings)
+        // responds with the posted comment
+        // Error - no body or no username 
+        // 
+        })
+//     })
+// })
+
+
+
+
+
     
                    
 
