@@ -3,6 +3,7 @@ const app = express()
 const { getTopics } = require ("./controllers/topics.controller")
 const endpoints = require ("./endpoints.json")
 const { getArticlesById } = require ("./controllers/articles.controller")
+const { getArticles } = require ("./controllers/articles.controller")
 
 
 app.get("/api", (request, response) => {
@@ -10,6 +11,8 @@ app.get("/api", (request, response) => {
 })
 
 app.get("/api/topics", getTopics)
+
+app.get("/api/articles", getArticles)
 
 app.get("/api/articles/:article_id", getArticlesById)
 
@@ -28,8 +31,7 @@ app.use('*', (request, response) => {
     response.status(404).send({ msg: 'URL NOT FOUND' });
   });
 
-app.use((err, request, response, next) => {const unhandledError = err
-console.log({ unhandledError})
+app.use((err, request, response, next) => {
 response.status(500).send({msg : "500 server error"})
 })
 
