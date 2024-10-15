@@ -11,8 +11,22 @@ exports.selectArticlesById = (article_id) => {
        return result.rows[0]
     })
     .catch((err)=> {
-        console.error(err)
+        //console.error(err)
         throw err
     })
     
+}
+exports.selectArticles = (sort_by = 'created_at', order = 'DESC') => {
+    return db
+    .query(`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)
+        AS comment_count
+        FROM articles
+        LEFT JOIN comments ON articles.article_id = comments.article_id
+        GROUP BY articles.article_id
+        ORDER BY created_at;
+        `)
+    .then((result) => {
+       return result.rows
+    })
+  
 }
