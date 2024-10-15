@@ -1,5 +1,6 @@
 const { selectArticlesById } = require("../models/articles.model")
 const { selectArticles } = require("../models/articles.model")
+const { selectAllComments } = require("../models/articles.model")
 
 exports.getArticlesById = (request, response, next) => {
 
