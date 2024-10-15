@@ -1,5 +1,6 @@
 const { selectArticlesById } = require("../models/articles.model")
 const { selectArticles } = require("../models/articles.model")
+const { selectAllComments } = require("../models/articles.model")
 
 exports.getArticlesById = (request, response, next) => {
 
@@ -27,5 +28,10 @@ exports.getArticles = (request, response, next) => {
          next(err)
      })
     
+ }
+
+ exports.getAllComments = (request, response, next) =>{ selectAllComments()
+        console.log('hello From controller')
+
  }
 

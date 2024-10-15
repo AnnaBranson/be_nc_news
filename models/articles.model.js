@@ -30,3 +30,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC') => {
     })
   
 }
+
+exports.selectAllComments = () => {
+console.log("hello from model")
+}

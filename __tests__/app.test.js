@@ -39,7 +39,6 @@ describe("/api",()=>{
     
 })
 
-
 describe("api/topics ", () => {
     test("GET: 200 sends an array of objects", () => {
         return request(app)
@@ -57,7 +56,7 @@ describe("api/topics ", () => {
     })
 });
 
-describe.only("/api/articles", () => {
+describe("/api/articles", () => {
     test("GET: 200 sends an array of objects with the correct properties", () => {
         return request(app)
         .get("/api/articles")
@@ -89,8 +88,6 @@ describe.only("/api/articles", () => {
         ))
     })
   })
-   
-
 
 describe("api/articles/:article_id ", () => {
     test("GET: 200 response with the requested article object", () => {
@@ -135,24 +132,27 @@ describe("api/articles/:article_id ", () => {
 
 })
 
-describe("api/topics ", () => {
-    test("GET: 200 sends an array of objects", () => {
+describe("api/articles/:article_id ", () => {
+    test("GET: 200 response with the requested article object", () => {
         return request(app)
-        .get("/api/topics")
+        .get("/api/articles/1")
         .expect(200)
-        .then(({body: { topics }}) => {
-            topics.forEach((topic) => {
-                expect(topic).toEqual({
-                    description: expect.any(String),
-                    slug: expect.any(String)
-                })
-            })
+        .then(({ body }) => {
+           
+           })
         })
-      
     });
-   
 
-})
+
+
+
+      
+
+
+
+
+      
+
 
 
       
