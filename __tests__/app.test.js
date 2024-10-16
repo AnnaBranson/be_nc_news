@@ -45,6 +45,7 @@ describe("api/topics ", () => {
         .get("/api/topics")
         .expect(200)
         .then(({body: { topics }}) => {
+            expect(topics).toHaveLength(3)
             topics.forEach((topic) => {
                 expect(topic).toEqual({
                     description: expect.any(String),
@@ -134,6 +135,7 @@ describe("api/articles/:article_id/comments ", () => {
         .get("/api/articles/1/comments")
         .expect(200)
         .then(({ body }) => {
+            expect(body.comments).toHaveLength(11)
             body.comments.forEach(comment => {
                 expect(comment).toMatchObject({
                     comment_id: expect.any(Number),
@@ -185,23 +187,42 @@ describe("api/articles/:article_id/comments ", () => {
                     })
             })
          
-    // describe("POST/api/articles/:article_id/comments ",()=>{
+    describe("POST/api/articles/:article_id/comments ",()=>{
 
-    //     test("", () => {
-    //         return request(app)
-    //         .get("")
-    //         .expect(200)
-    //         .then(({ body }) => {
+        test("POST: 200 adds comment to comment table with correct keys of body and username", () => {
+            const newComment = {
+                author: "butter_bridge",
+                body: "This is a test comment."
+            }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.comment).toHaveProperty("author"),
+                expect(body.comment).toHaveProperty("body"),
+                expect(body.comment).toHaveProperty("article_id"),
+                expect(body.comment).toMatchObject({
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    article_id: expect.any(Number)
+                })
               
-    //         })
+            })
         // add comment to comment array
         // comment is an object that has key of username and body (both strings)
         // responds with the posted comment
         // Error - no body or no username 
-        // 
+        // Error body/user name but in the wrong format. 
+        //6 tests- successful 200, 
+        //test - 201 - ignors unnecessary info 
+        //400 invalid id
+        //404 non existant bu t vaild id
+        //400 missing required fields
+        //404 username does not exist. Just another PSQL error 30P2?? run the test with a user that doesn't exist and see what PSQL error occurs. 
         })
-//     })
-// })
+   })
+ })
 
 
 

@@ -5,6 +5,7 @@ const endpoints = require ("./endpoints.json")
 const { getArticlesById, getArticles } = require ("./controllers/articles.controller")
 const { getAllComments, postComments } = require ("./controllers/comments.controller")
 
+app.use(express.json())
 
 app.get("/api", (request, response) => {
     response.status(200).send( {endpoints: endpoints})
