@@ -1,4 +1,6 @@
 const db = require("../db/connection")
+const format = require("pg-format")
+const articles = require("../db/data/test-data/articles")
 
 
 exports.selectArticlesById = (article_id) => {
@@ -16,6 +18,7 @@ exports.selectArticlesById = (article_id) => {
     })
     
 }
+
 exports.selectArticles = (sort_by = 'created_at', order = 'DESC') => {
     return db
     .query(`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)
@@ -31,3 +34,16 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC') => {
   
 }
 
+exports.changeArticle = (article_id, inc_vote) => {
+    return db.query(
+        `UPDATE articles
+        SET votes = votes + $1
+        WHERE article_id = $2
+        RETURNING *;`,
+        [inc_vote, article_id]
+    ).then(({rows}) => {
+       // console.log(rows[0])
+        return rows[0]
+    })
+
+ }

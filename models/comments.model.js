@@ -9,7 +9,7 @@ exports.selectAllComments = (article_id) => {
    .then(({rows}) => {
     return rows;
    })
-    }
+}
 
 exports.addComments = (article_id, author, body) => {
   
@@ -27,6 +27,7 @@ exports.addComments = (article_id, author, body) => {
   })
  
 }
+
 
 
     

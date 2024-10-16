@@ -90,7 +90,8 @@ describe("/api/articles", () => {
     })
   })
 
-describe("api/articles/:article_id ", () => {
+describe("api/articles/:article_id", () => {
+  describe("GET: api/articles/:article_id", () =>{
     test("GET: 200 response with the requested article object", () => {
         return request(app)
         .get("/api/articles/1")
@@ -124,6 +125,46 @@ describe("api/articles/:article_id ", () => {
         .then(({ body: { msg } }) => {
             expect(msg).toBe("Not Found!")          
         })
+    }),
+
+  describe.only("PATCH api/articles/:article_id", () =>{
+    test("PATCH: 200 returns updated article with correct properties ", () => {
+        const articleUpdate = {inc_vote: 1}
+            return request(app)
+            .patch("/api/articles/1")
+            .send(articleUpdate)
+            .expect(200)
+            .then(({ body }) => {
+                const { article } = body
+                   expect(article.title).toEqual("Living in the shadow of a great man"),
+                   expect(article.topic).toEqual("mitch"),
+                   expect(article.author).toEqual("butter_bridge"),
+                   expect(article.body).toEqual("I find this existence challenging"),
+                   expect(article.votes).toEqual(101),
+                   expect(article.article_img_url).toEqual(
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+                  
+            })
+        })
+    test("PATCH: 200 returns updated article with correct properties ", () => {
+            const articleUpdate = {inc_vote: 1}
+                return request(app)
+                .patch("/api/articles/1")
+                .send(articleUpdate)
+                .expect(200)
+                .then(({ body }) => {
+                    const { article } = body
+                       expect(article.title).toEqual("Living in the shadow of a great man"),
+                       expect(article.topic).toEqual("mitch"),
+                       expect(article.author).toEqual("butter_bridge"),
+                       expect(article.body).toEqual("I find this existence challenging"),
+                       expect(article.votes).toEqual(101),
+                       expect(article.article_img_url).toEqual(
+                          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+                      
+                })
+            });
+       })
     })
 })
 

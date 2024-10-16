@@ -1,6 +1,6 @@
-const { selectArticlesById } = require("../models/articles.model")
-const { selectArticles } = require("../models/articles.model")
-const { selectAllComments } = require("../models/articles.model")
+const { selectArticlesById, selectArticles, changeArticle } = require("../models/articles.model")
+
+
 
 exports.getArticlesById = (request, response, next) => {
 
@@ -28,5 +28,19 @@ exports.getArticles = (request, response, next) => {
          next(err)
      })
     
- }
+}
+
+exports.updateArticle = (request, response, next) => {
+    const { article_id } = request.params
+    const { inc_vote } = request.body
+    
+    changeArticle(article_id, inc_vote)
+    .then((updatedArticle) => {
+        console.log(updatedArticle)
+        response.status(200).send({ article: updatedArticle} )
+        
+    })
+    .catch(next)
+    
+}
 
