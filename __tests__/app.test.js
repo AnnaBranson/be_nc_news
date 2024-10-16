@@ -45,6 +45,7 @@ describe("api/topics ", () => {
         .get("/api/topics")
         .expect(200)
         .then(({body: { topics }}) => {
+            expect(topics).toHaveLength(3)
             topics.forEach((topic) => {
                 expect(topic).toEqual({
                     description: expect.any(String),
@@ -108,7 +109,7 @@ describe("api/articles/:article_id ", () => {
            })
         })
     });
-    test("GET: 400 ", () => {
+    test("GET: 400 response with error message when passed an invalid article ID)", () => {
         return request(app)
         .get("/api/articles/not-a-number")
         .expect(400)
@@ -127,11 +128,14 @@ describe("api/articles/:article_id ", () => {
 })
 
 describe("api/articles/:article_id/comments ", () => {
-    test("GET: 200 response with an array of comments from an article with a given article ID", () => {
+    describe("GET/api/articles/:article_id/comments ",()=>{
+        
+        test("GET: 200 response with an array of comments from an article with a given article ID", () => {
         return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
         .then(({ body }) => {
+            expect(body.comments).toHaveLength(11)
             body.comments.forEach(comment => {
                 expect(comment).toMatchObject({
                     comment_id: expect.any(Number),
@@ -140,72 +144,150 @@ describe("api/articles/:article_id/comments ", () => {
                     author: expect.any(String),
                     body: expect.any(String),
                     article_id: expect.any(Number)
+                })
             })
-            
+        })
+                    })
+        test("GET: 200 response with an array of comments from an article with a given article ID ordered by data created with the most recent first by default", () => {
+                    return request(app)
+                    .get("/api/articles/1/comments")
+                    .expect(200)
+                    .then(({ body }) => {
+                        expect(body.comments).toBeSortedBy("created_at", {descending: true})
+                        })
+                        
+                    })
+        test("GET: 400 response when passed an article_id that is not a number", () => {
+                    return request(app)
+                        .get("/api/articles/not-a-number/comments")
+                        .expect(400)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe("Bad Request!")
+                                })
+                                
+                    })
+        test("GET: 404 response when passed a number that does not exist on our table", () => {
+                    return request(app)
+                        .get("/api/articles/999/comments")
+                        .expect(404)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe("Not Found!")
+                              })
+                                                
+                    })
+        test("GET: 200 response with an empty array if the article_id is valid but there are no comments on that article", () => {
+                    return request(app)
+                    .get("/api/articles/2/comments")
+                    .expect(200)
+                    .then(({ body }) => {
+                    expect(Array.isArray(body.comments)).toBe(true)
+                    expect(body.comments).toHaveLength(0)
+                                })
+                                
+                    })
             })
-         })
-    })
-    test("GET: 200 response with an array of comments from an article with a given article ID ordered by data created with the most recent first by default", () => {
-        return request(app)
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({ body }) => {
-            expect(body.comments).toBeSortedBy("created_at", {descending: true})
+         
+    describe("POST/api/articles/:article_id/comments ",()=>{
+
+        test("POST: 201 adds comment to comment table with correct keys of body and username", () => {
+            const newComment = {
+                author: "butter_bridge",
+                body: "This is a test comment."
+            }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(201)
+            .then(({ body }) => {
+                expect(body.comment).toHaveProperty("author"),
+                expect(body.comment).toHaveProperty("body"),
+                expect(body.comment).toHaveProperty("article_id"),
+                expect(body.comment).toMatchObject({
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    article_id: expect.any(Number)
+                })
+              
             })
-            
+   
+        })
+        test("POST: 201 ignors unneccessary information ", () => {
+            const newComment = {
+                author: "butter_bridge",
+                body: "This is a test comment.",
+                UnnecessryInfo: "unnecessary string"
+            }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(201)
+            .then(({ body }) => {
+                expect(body.comment).toHaveProperty("author"),
+                expect(body.comment).toHaveProperty("body"),
+                expect(body.comment).toHaveProperty("article_id"),
+                expect(body.comment).toMatchObject({
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    article_id: expect.any(Number)
+                })
+              
             })
-    test("GET: 400 response when passed an article_id that is not a number", () => {
-        return request(app)
-            .get("/api/articles/not-a-number/comments")
+        })
+        test("POST: 400 response with an error message when receives invalid article_id ", () => {
+            const newComment = {
+              author: "butter_bridge",
+                body: "This is a test comment.",
+            }
+            return request(app)
+            .post("/api/articles/not-a-number/comments")
+            .send(newComment)
             .expect(400)
-            .then(({ body }) => {
-                expect(body.msg).toBe("Bad Request!")
-                    })
-                    
-                    })
-    test("GET: 404 response when passed a number that does not exist on our table", () => {
-        return request(app)
-            .get("/api/articles/999/comments")
-            .expect(404)
-            .then(({ body }) => {
-                expect(body.msg).toBe("Not Found!")
-                  })
-                                    
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad Request!")          
             })
-    test("GET: 200 response with an empty array if the article_id is valid but there are no comments on that article", () => {
-        return request(app)
-        .get("/api/articles/2/comments")
-        .expect(200)
-        .then(({ body }) => {
-        expect(Array.isArray(body.comments)).toBe(true)
-        expect(body.comments).toHaveLength(0)
-                    })
-                    
-                    })
+        })
+        test("POST: 404 response with an error message if passed a valid article_id that does not exist in the database ", () => {
+            const newComment = {
+                author: "butter_bridge",
+                  body: "This is a test comment.",
+              }
+            return request(app)
+            .get("/api/articles/9999/comments")
+            .send(newComment)
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Not Found!")          
+            })
     })
-    
-                   
+        test("POST: 400 response with an error message if required fields are not present ", () => {
+        const newComment = {
+            author: "butter_bridge"
+          }
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Missing input")          
+        })
+})
+        test("POST: 404 responds with an error message when given a username that does not exist ", () => {
+        const newComment = {
+            author: "Non-existant Username",
+            body: "This is a test comment.",
+                }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Invalid Username")          
+    })
+        })      
+ })
+})
 
   
-
-    
-
-
-
-
-
       
-
-
-
-
       
-
-
-
-      
-
-
-
-
-      
+             

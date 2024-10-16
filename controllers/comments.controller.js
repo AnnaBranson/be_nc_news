@@ -1,5 +1,6 @@
-const { selectAllComments } = require("../models/comments.model");
+const { selectAllComments, addComments } = require("../models/comments.model");
 const { selectArticlesById } = require("../models/articles.model");
+
 
 exports.getAllComments = (request, response, next) => { 
     const { article_id } = request.params;
@@ -21,3 +22,20 @@ exports.getAllComments = (request, response, next) => {
             next(err);  
         });
 };
+
+exports.postComments = (request, response, next) => {
+    
+    const { author, body } = request.body
+    const { article_id } = request.params
+    if (!author || !body){
+        return response.status(400).send({msg: "Missing input"})
+    }
+
+    addComments(article_id, author, body)
+     .then((comment) => {
+         response.status(201).send({ comment })
+     })
+     .catch((err) => {
+        next(err)
+    })
+}
