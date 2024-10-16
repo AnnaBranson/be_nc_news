@@ -27,10 +27,15 @@ exports.postComments = (request, response, next) => {
     
     const { author, body } = request.body
     const { article_id } = request.params
+    if (!author || !body){
+        return response.status(400).send({msg: "Missing input"})
+    }
 
     addComments(article_id, author, body)
-    .then((comment) => {
-        response.status(200).send({ comment })
+     .then((comment) => {
+         response.status(201).send({ comment })
+     })
+     .catch((err) => {
+        next(err)
     })
-   .catch(next)
 }

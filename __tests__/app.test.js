@@ -109,7 +109,7 @@ describe("api/articles/:article_id ", () => {
            })
         })
     });
-    test("GET: 400 ", () => {
+    test("GET: 400 response with error message when passed an invalid article ID)", () => {
         return request(app)
         .get("/api/articles/not-a-number")
         .expect(400)
@@ -189,7 +189,7 @@ describe("api/articles/:article_id/comments ", () => {
          
     describe("POST/api/articles/:article_id/comments ",()=>{
 
-        test("POST: 200 adds comment to comment table with correct keys of body and username", () => {
+        test("POST: 201 adds comment to comment table with correct keys of body and username", () => {
             const newComment = {
                 author: "butter_bridge",
                 body: "This is a test comment."
@@ -197,7 +197,7 @@ describe("api/articles/:article_id/comments ", () => {
             return request(app)
             .post("/api/articles/1/comments")
             .send(newComment)
-            .expect(200)
+            .expect(201)
             .then(({ body }) => {
                 expect(body.comment).toHaveProperty("author"),
                 expect(body.comment).toHaveProperty("body"),
@@ -209,48 +209,85 @@ describe("api/articles/:article_id/comments ", () => {
                 })
               
             })
-        // add comment to comment array
-        // comment is an object that has key of username and body (both strings)
-        // responds with the posted comment
-        // Error - no body or no username 
-        // Error body/user name but in the wrong format. 
-        //6 tests- successful 200, 
-        //test - 201 - ignors unnecessary info 
-        //400 invalid id
-        //404 non existant bu t vaild id
-        //400 missing required fields
-        //404 username does not exist. Just another PSQL error 30P2?? run the test with a user that doesn't exist and see what PSQL error occurs. 
+   
         })
-   })
+        test("POST: 201 ignors unneccessary information ", () => {
+            const newComment = {
+                author: "butter_bridge",
+                body: "This is a test comment.",
+                UnnecessryInfo: "unnecessary string"
+            }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(201)
+            .then(({ body }) => {
+                expect(body.comment).toHaveProperty("author"),
+                expect(body.comment).toHaveProperty("body"),
+                expect(body.comment).toHaveProperty("article_id"),
+                expect(body.comment).toMatchObject({
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    article_id: expect.any(Number)
+                })
+              
+            })
+        })
+        test("POST: 400 response with an error message when receives invalid article_id ", () => {
+            const newComment = {
+              author: "butter_bridge",
+                body: "This is a test comment.",
+            }
+            return request(app)
+            .post("/api/articles/not-a-number/comments")
+            .send(newComment)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad Request!")          
+            })
+        })
+        test("POST: 404 response with an error message if passed a valid article_id that does not exist in the database ", () => {
+            const newComment = {
+                author: "butter_bridge",
+                  body: "This is a test comment.",
+              }
+            return request(app)
+            .get("/api/articles/9999/comments")
+            .send(newComment)
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Not Found!")          
+            })
+    })
+        test("POST: 400 response with an error message if required fields are not present ", () => {
+        const newComment = {
+            author: "butter_bridge"
+          }
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Missing input")          
+        })
+})
+        test("POST: 404 responds with an error message when given a username that does not exist ", () => {
+        const newComment = {
+            author: "Non-existant Username",
+            body: "This is a test comment.",
+                }
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Invalid Username")          
+    })
+        })      
  })
-
-
-
-
-
-    
-                   
+})
 
   
-
-    
-
-
-
-
-
       
-
-
-
-
       
-
-
-
-      
-
-
-
-
-      
+             

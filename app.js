@@ -22,9 +22,12 @@ app.get("/api/articles/:article_id/comments", getAllComments)
 app.post("/api/articles/:article_id/comments", postComments)
 
 app.use((err, request, response, next) =>{
-    if (err.code === "22P02") {
+    if (err.code === "22P02"){
         response.status(400).send({msg: "Bad Request!"})
-    } else next(err)
+    }
+    if (err.code === '23503'){
+        response.status(404).send({msg: "Invalid Username"})
+    }else next(err)
 })
 app.use((err,request, response, next) => {
     if (err.status && err.msg) {
