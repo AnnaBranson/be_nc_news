@@ -127,7 +127,7 @@ describe("api/articles/:article_id", () => {
         })
     }),
 
-  describe.only("PATCH api/articles/:article_id", () =>{
+  describe("PATCH api/articles/:article_id", () =>{
     test("PATCH: 200 returns updated article with correct properties ", () => {
         const articleUpdate = {inc_vote: 1}
             return request(app)
