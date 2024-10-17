@@ -55,7 +55,7 @@ describe("api/topics ", () => {
         })
       
     })
-});
+})
 
 describe("/api/articles", () => {
     test("GET: 200 sends an array of objects with the correct properties", () => {
@@ -88,7 +88,7 @@ describe("/api/articles", () => {
             expect(body.articles).toBeSortedBy("created_at")
         ))
     })
-  })
+})
 
 describe("api/articles/:article_id", () => {
   describe("GET: api/articles/:article_id", () =>{
@@ -125,7 +125,8 @@ describe("api/articles/:article_id", () => {
         .then(({ body: { msg } }) => {
             expect(msg).toBe("Not Found!")          
         })
-    }),
+    })
+}),
 
   describe("PATCH api/articles/:article_id", () =>{
     test("PATCH: 200 returns updated article with correct properties ", () => {
@@ -146,24 +147,64 @@ describe("api/articles/:article_id", () => {
                   
             })
         })
-    test("PATCH: 200 returns updated article with correct properties ", () => {
+    test("PATCH: 400 response with error message when passed an invalid article ID)", () => {
             const articleUpdate = {inc_vote: 1}
-                return request(app)
-                .patch("/api/articles/1")
-                .send(articleUpdate)
-                .expect(200)
-                .then(({ body }) => {
-                    const { article } = body
-                       expect(article.title).toEqual("Living in the shadow of a great man"),
-                       expect(article.topic).toEqual("mitch"),
-                       expect(article.author).toEqual("butter_bridge"),
-                       expect(article.body).toEqual("I find this existence challenging"),
-                       expect(article.votes).toEqual(101),
-                       expect(article.article_img_url).toEqual(
-                          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
-                      
-                })
-            });
+            return request(app)
+            .patch("/api/articles/not-a-number")
+            .send(articleUpdate)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad Request!")          
+            })
+        })
+    test("PATCH: 404 response with an error message if passed a valid article_id that does not exist in the database ", () => {
+            const articleUpdate = {inc_vote: 1}
+            return request(app)
+            .patch("/api/articles/9999")
+            .send(articleUpdate)
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Not Found!")          
+            })
+        })
+    test("PATCH: 400 response with an error message if passed an invalid data type for updating article.", () => {
+            const articleUpdate = {inc_vote: "not_a_number"}
+            return request(app)
+            .patch("/api/articles/1")
+            .send(articleUpdate)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Invalid Input!")          
+            })
+        })
+  
+    test("PATCH: 200 ignores addition information added and updates article as requested.", () => {
+            const articleUpdate = {inc_vote: 1, extraKey: "extra info"}
+            return request(app)
+            .patch("/api/articles/1")
+            .send(articleUpdate)
+            .expect(200)
+            .then(({ body }) => {
+                const { article } = body
+                   expect(article.title).toEqual("Living in the shadow of a great man"),
+                   expect(article.topic).toEqual("mitch"),
+                   expect(article.author).toEqual("butter_bridge"),
+                   expect(article.body).toEqual("I find this existence challenging"),
+                   expect(article.votes).toEqual(101),
+                   expect(article.article_img_url).toEqual(
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+                  
+            })
+        })
+    test("PATCH: 400 returns error when passed an input with no inc_vote", () => {
+            const articleUpdate = {}
+            return request(app)
+            .patch("/api/articles/1")
+            .send(articleUpdate)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Invalid Input!") 
+        })
        })
     })
 })
@@ -327,6 +368,11 @@ describe("api/articles/:article_id/comments ", () => {
         })      
  })
 })
+
+
+
+
+
 
   
       

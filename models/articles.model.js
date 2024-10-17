@@ -41,9 +41,8 @@ exports.changeArticle = (article_id, inc_vote) => {
         WHERE article_id = $2
         RETURNING *;`,
         [inc_vote, article_id]
-    ).then(({rows}) => {
-       // console.log(rows[0])
-        return rows[0]
+    ).then(({ rows }) => {
+       return rows[0]
     })
 
  }

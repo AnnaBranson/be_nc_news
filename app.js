@@ -29,7 +29,12 @@ app.use((err, request, response, next) =>{
     }
     if (err.code === '23503'){
         response.status(404).send({msg: "Invalid Username"})
-    }else next(err)
+    }
+    if (err.code === '23502'){
+        response.status(404).send({msg: "Invalid Input"})
+    }
+    
+    else next(err)
 })
 app.use((err,request, response, next) => {
     if (err.status && err.msg) {
