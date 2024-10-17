@@ -369,6 +369,51 @@ describe("api/articles/:article_id/comments ", () => {
  })
 })
 
+describe("api/comments/:comment_id ", () => {
+    test("DELETE: 204 with no content", () => {
+        return request(app)
+        .get("/api/comments")
+        .then(({body}) => {
+            console.log(body)
+            const initialCommentCount = body.comments.length;
+            return request(app)
+            .delete("/api/comments/1")
+            .expect(204)
+            .then(() => {
+                return request(app)
+                .get("/api/comments")
+                .then(({body}) => {
+                    const finalCommentCount = body.comments.length;
+                expect(finalCommentCount).toBe(initialCommentCount -1)})
+                })
+
+        })
+        
+        
+        })
+    test("DELETE: 400 returns error message when passed an invalid comment_id", () => {
+            return request(app)
+            .delete("/api/comments/invalid-comment-id")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                    expect(msg).toBe("Bad Request!")          
+                })
+        })
+    test("DELETE: 404 returns error message when passed a valid comment_id but there is not comment to delete ", () => {
+            return request(app)
+            .delete("/api/comments/9999")
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                    expect(msg).toBe("Not Found!")          
+                })
+        })
+        
+})
+      
+    
+
+
+
 
 
 

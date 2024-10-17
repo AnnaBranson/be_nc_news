@@ -1,8 +1,8 @@
-const { selectAllComments, addComments } = require("../models/comments.model");
+const { selectAllCommentsById, addComments, removeComment, selectEveryCommentInTable } = require("../models/comments.model");
 const { selectArticlesById } = require("../models/articles.model");
 
 
-exports.getAllComments = (request, response, next) => { 
+exports.getAllCommentsById = (request, response, next) => { 
     const { article_id } = request.params;
 
     selectArticlesById(article_id)
@@ -12,7 +12,7 @@ exports.getAllComments = (request, response, next) => {
                 return Promise.reject({ status: 404, msg: "Article Not Found!" });
             } 
             
-            return selectAllComments(article_id);
+            return selectAllCommentsById(article_id);
         })
         .then((comments) => {
             
@@ -22,6 +22,18 @@ exports.getAllComments = (request, response, next) => {
             next(err);  
         });
 };
+
+exports.getEveryCommentInTable = (request, response, next) =>{
+    console.log("controller")
+    selectEveryCommentInTable()
+        .then((comments) => {
+            response.status(200).send({ comments })
+        })
+        .catch((err) => {
+            next(err)
+        })
+
+}
 
 exports.postComments = (request, response, next) => {
     
@@ -38,4 +50,15 @@ exports.postComments = (request, response, next) => {
      .catch((err) => {
         next(err)
     })
+}
+
+exports.deleteComment = (request, response, next) => {
+    const { comment_id }= request.params
+    
+    removeComment(comment_id)
+    .then(() => {
+        response.status(204).send()
+    })
+    .catch(next)
+    
 }
