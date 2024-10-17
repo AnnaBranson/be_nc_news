@@ -88,6 +88,22 @@ describe("/api/articles", () => {
             expect(body.articles).toBeSortedBy("created_at")
         ))
     })
+    test("GET: 200 - take a sort_by query and respond with articles sorted by given column name", () => {
+        return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({body})=>(
+            expect(body.articles).toBeSortedBy("author")
+        ))
+    })
+    test("GET: 400 - returns an error when given a non-valid sort_by", () => {
+        return request(app)
+        .get("/api/articles?sort_by=invalidColumn")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request")          
+        })
+    })
 })
 
 describe("api/articles/:article_id", () => {
@@ -281,13 +297,10 @@ describe("api/articles/:article_id/comments ", () => {
             .send(newComment)
             .expect(201)
             .then(({ body }) => {
-                expect(body.comment).toHaveProperty("author"),
-                expect(body.comment).toHaveProperty("body"),
-                expect(body.comment).toHaveProperty("article_id"),
                 expect(body.comment).toMatchObject({
-                    author: expect.any(String),
-                    body: expect.any(String),
-                    article_id: expect.any(Number)
+                    author: "butter_bridge",
+                    body: "This is a test comment.",
+                    article_id: 1
                 })
               
             })
@@ -304,13 +317,10 @@ describe("api/articles/:article_id/comments ", () => {
             .send(newComment)
             .expect(201)
             .then(({ body }) => {
-                expect(body.comment).toHaveProperty("author"),
-                expect(body.comment).toHaveProperty("body"),
-                expect(body.comment).toHaveProperty("article_id"),
                 expect(body.comment).toMatchObject({
-                    author: expect.any(String),
-                    body: expect.any(String),
-                    article_id: expect.any(Number)
+                    author: "butter_bridge",
+                    body: "This is a test comment.",
+                    article_id: 1
                 })
               
             })
@@ -374,7 +384,6 @@ describe("api/comments/:comment_id ", () => {
         return request(app)
         .get("/api/comments")
         .then(({body}) => {
-            console.log(body)
             const initialCommentCount = body.comments.length;
             return request(app)
             .delete("/api/comments/1")
