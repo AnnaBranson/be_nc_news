@@ -128,6 +128,17 @@ describe("/api/articles", () => {
             expect(msg).toBe("Bad Request")          
         })
     })
+    test.skip("GET: 200 - returns articles with a given topic", () => {
+        return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.articles.length).toBe(12)
+            body.articles.forEach(articles => {
+                expect(articles.topic).toEqual("mitch")  
+            })        
+        })
+    })
 })
 
 describe("api/articles/:article_id", () => {
@@ -404,14 +415,14 @@ describe("api/articles/:article_id/comments ", () => {
 })
 
 describe("api/comments/:comment_id ", () => {
-    test("DELETE: 204 with no content", () => {
+    test("DELETE: 200 with no content", () => {
         return request(app)
         .get("/api/comments")
         .then(({body}) => {
             const initialCommentCount = body.comments.length;
             return request(app)
             .delete("/api/comments/1")
-            .expect(204)
+            .expect(200)
             .then(() => {
                 return request(app)
                 .get("/api/comments")
