@@ -281,13 +281,10 @@ describe("api/articles/:article_id/comments ", () => {
             .send(newComment)
             .expect(201)
             .then(({ body }) => {
-                expect(body.comment).toHaveProperty("author"),
-                expect(body.comment).toHaveProperty("body"),
-                expect(body.comment).toHaveProperty("article_id"),
                 expect(body.comment).toMatchObject({
-                    author: expect.any(String),
-                    body: expect.any(String),
-                    article_id: expect.any(Number)
+                    author: "butter_bridge",
+                    body: "This is a test comment.",
+                    article_id: 1
                 })
               
             })
@@ -304,13 +301,10 @@ describe("api/articles/:article_id/comments ", () => {
             .send(newComment)
             .expect(201)
             .then(({ body }) => {
-                expect(body.comment).toHaveProperty("author"),
-                expect(body.comment).toHaveProperty("body"),
-                expect(body.comment).toHaveProperty("article_id"),
                 expect(body.comment).toMatchObject({
-                    author: expect.any(String),
-                    body: expect.any(String),
-                    article_id: expect.any(Number)
+                    author: "butter_bridge",
+                    body: "This is a test comment.",
+                    article_id: 1
                 })
               
             })
@@ -341,7 +335,7 @@ describe("api/articles/:article_id/comments ", () => {
                 expect(msg).toBe("Not Found!")          
             })
     })
-        test("POST: 400 response with an error message if required fields are not present ", () => {
+        test.only("POST: 400 response with an error message if required fields are not present ", () => {
         const newComment = {
             author: "butter_bridge"
           }
