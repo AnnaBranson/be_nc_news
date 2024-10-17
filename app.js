@@ -2,7 +2,7 @@ const express = require ("express")
 const app = express()
 const { getTopics } = require ("./controllers/topics.controller")
 const endpoints = require ("./endpoints.json")
-const { getArticlesById, getArticles } = require ("./controllers/articles.controller")
+const { getArticlesById, getArticles, updateArticle } = require ("./controllers/articles.controller")
 const { getAllComments, postComments } = require ("./controllers/comments.controller")
 
 app.use(express.json())
@@ -17,6 +17,8 @@ app.get("/api/articles", getArticles)
 
 app.get("/api/articles/:article_id", getArticlesById)
 
+app.patch("/api/articles/:article_id", updateArticle)
+
 app.get("/api/articles/:article_id/comments", getAllComments)
 
 app.post("/api/articles/:article_id/comments", postComments)
@@ -27,7 +29,12 @@ app.use((err, request, response, next) =>{
     }
     if (err.code === '23503'){
         response.status(404).send({msg: "Invalid Username"})
-    }else next(err)
+    }
+    if (err.code === '23502'){
+        response.status(404).send({msg: "Invalid Input"})
+    }
+    
+    else next(err)
 })
 app.use((err,request, response, next) => {
     if (err.status && err.msg) {
