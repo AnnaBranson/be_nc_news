@@ -1,6 +1,7 @@
 const db = require("../db/connection")
 const format = require("pg-format")
 const articles = require("../db/data/test-data/articles")
+const topics = require("../db/data/test-data/topics")
 
 
 exports.selectArticlesById = (article_id) => {
@@ -13,30 +14,48 @@ exports.selectArticlesById = (article_id) => {
        return result.rows[0]
     })
     .catch((err)=> {
-        //console.error(err)
         throw err
     })
     
 }
 
-exports.selectArticles = (sort_by = 'created_at', order = 'DESC') => {
+exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
+    
     const validSortBys = ["author", "title", "topic", "body", "created_at", "article_img_url" ]
-    if(!validSortBys.includes(sort_by)){
+    const validOrder = ["ASC", "DESC"]
+    if(!validSortBys.includes(sort_by) || !validOrder.includes(order)){
         return Promise.reject({status:400, msg:"Bad Request"})
     }
+
+    let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)
+        AS comment_count
+        FROM articles
+        LEFT JOIN comments ON articles.article_id = comments.article_id
+        GROUP BY articles.article_id`
+
+    let queryVals = []
+
+    if (topic) {
+        queryStr += ` WHERE articles.topic = $1`
+        queryVals.push(topic)
+    }
+
+    queryStr += ` ORDER BY ${sort_by} ${order};`
+
     return db
-    .query(`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)
+    .query(queryStr, queryVals)
+    .then((results) => {
+       return results.rows
+    })
+  
+}
+/*`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)
         AS comment_count
         FROM articles
         LEFT JOIN comments ON articles.article_id = comments.article_id
         GROUP BY articles.article_id
-        ORDER BY ${sort_by};
-        `)
-    .then((result) => {
-       return result.rows
-    })
-  
-}
+        ORDER BY ${sort_by} ${order};
+        // */
 
 exports.changeArticle = (article_id, inc_vote) => {
     return db.query(
