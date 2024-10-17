@@ -88,6 +88,22 @@ describe("/api/articles", () => {
             expect(body.articles).toBeSortedBy("created_at")
         ))
     })
+    test("GET: 200 - take a sort_by query and respond with articles sorted by given column name", () => {
+        return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({body})=>(
+            expect(body.articles).toBeSortedBy("author")
+        ))
+    })
+    test("GET: 400 - returns an error when given a non-valid sort_by", () => {
+        return request(app)
+        .get("/api/articles?sort_by=invalidColumn")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request")          
+        })
+    })
 })
 
 describe("api/articles/:article_id", () => {
@@ -335,7 +351,7 @@ describe("api/articles/:article_id/comments ", () => {
                 expect(msg).toBe("Not Found!")          
             })
     })
-        test.only("POST: 400 response with an error message if required fields are not present ", () => {
+        test("POST: 400 response with an error message if required fields are not present ", () => {
         const newComment = {
             author: "butter_bridge"
           }
@@ -368,7 +384,6 @@ describe("api/comments/:comment_id ", () => {
         return request(app)
         .get("/api/comments")
         .then(({body}) => {
-            console.log(body)
             const initialCommentCount = body.comments.length;
             return request(app)
             .delete("/api/comments/1")

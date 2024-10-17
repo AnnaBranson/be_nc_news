@@ -24,7 +24,7 @@ exports.getAllCommentsById = (request, response, next) => {
 };
 
 exports.getEveryCommentInTable = (request, response, next) =>{
-    console.log("controller")
+    
     selectEveryCommentInTable()
         .then((comments) => {
             response.status(200).send({ comments })
