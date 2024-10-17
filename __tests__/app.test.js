@@ -128,6 +128,19 @@ describe("/api/articles", () => {
             expect(msg).toBe("Bad Request")          
         })
     })
+    test("GET: 200 - returns article filtered by a given topic", () => {
+    return request(app)
+    .get("/api/articles?topic=mitch")
+    .expect(200)
+    .then(({body}) => {
+        expect(body.articles.length).toBe(12)
+        body.articles.forEach((article) =>{
+            expect(article.topic).toBe("mitch")
+        })
+    })
+})
+    //GET: 200 - all articles return when no filter supplied 
+    //GET 404 - returns error when given an unavailable topic
 })
 
 describe("api/articles/:article_id", () => {

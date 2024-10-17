@@ -18,6 +18,7 @@ exports.selectEveryCommentInTable = () => {
       return rows
    })
 }
+
 exports.addComments = (article_id, author, body) => {
   
    const query = 
