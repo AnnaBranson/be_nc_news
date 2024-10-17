@@ -85,7 +85,15 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({body})=>(
-            expect(body.articles).toBeSortedBy("created_at")
+            expect(body.articles).toBeSortedBy("created_at", {descending:true})
+        ))
+    })
+    test("GET: 200 - articles are in DESC order by default", () => {
+        return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({body})=>(
+            expect(body.articles).toBeSortedBy("author", {descending: true})
         ))
     })
     test("GET: 200 - take a sort_by query and respond with articles sorted by given column name", () => {
@@ -93,12 +101,28 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=author")
         .expect(200)
         .then(({body})=>(
-            expect(body.articles).toBeSortedBy("author")
+            expect(body.articles).toBeSortedBy("author", {descending: true})
         ))
     })
-    test("GET: 400 - returns an error when given a non-valid sort_by", () => {
+    test("GET: 200 - take a order query and respond with articles sorted in given order", () => {
         return request(app)
-        .get("/api/articles?sort_by=invalidColumn")
+        .get("/api/articles?order=ASC")
+        .expect(200)
+        .then(({body})=>(
+            expect(body.articles).toBeSortedBy("created_at", {ascending: true})
+        ))
+    })
+    test("GET: 400 - returns an error when given a non-valid sort_by and/or order", () => {
+        return request(app)
+        .get("/api/articles?sort_by=invalidColumn&&order=invalidOrder")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad Request")          
+        })
+    })
+    test("GET: 400 - returns an error when given a non-valid order query", () => {
+        return request(app)
+        .get("/api/articles?sort_by=author&order=invalidOrder")
         .expect(400)
         .then(({ body: { msg } }) => {
             expect(msg).toBe("Bad Request")          
