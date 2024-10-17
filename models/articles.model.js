@@ -21,7 +21,8 @@ exports.selectArticlesById = (article_id) => {
 
 exports.selectArticles = (sort_by = 'created_at', order = 'DESC') => {
     const validSortBys = ["author", "title", "topic", "body", "created_at", "article_img_url" ]
-    if(!validSortBys.includes(sort_by)){
+    const validOrder = ["ASC", "DESC"]
+    if(!validSortBys.includes(sort_by) || !validOrder){
         return Promise.reject({status:400, msg:"Bad Request"})
     }
     return db
