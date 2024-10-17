@@ -4,12 +4,14 @@ const { getTopics } = require ("./controllers/topics.controller")
 const endpoints = require ("./endpoints.json")
 const { getArticlesById, getArticles, updateArticle } = require ("./controllers/articles.controller")
 const { getAllCommentsById, postComments, deleteComment, getEveryCommentInTable } = require ("./controllers/comments.controller")
+const {getUsers} = require ("./controllers/users.controller")
 
 app.use(express.json())
 
 app.get("/api", (request, response) => {
     response.status(200).send( {endpoints: endpoints})
 })
+app.get("/api/users", getUsers)
 
 app.get("/api/topics", getTopics)
 
