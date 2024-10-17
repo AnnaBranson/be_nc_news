@@ -13,6 +13,7 @@ exports.getArticlesById = (request, response, next) => {
         response.status(200).send({ article })
     })
     .catch((err) => {
+        console.log(err)
         next(err)
     })
    
@@ -34,13 +35,19 @@ exports.updateArticle = (request, response, next) => {
     const { article_id } = request.params
     const { inc_vote } = request.body
     
+    if (isNaN(Number(inc_vote)) || !inc_vote){
+        return next({status: 400, msg: "Invalid Input!"})
+    }
     changeArticle(article_id, inc_vote)
     .then((updatedArticle) => {
-        console.log(updatedArticle)
+        if (!updatedArticle)
+            return next({status: 404, msg: "Not Found!"})
         response.status(200).send({ article: updatedArticle} )
         
     })
-    .catch(next)
+    .catch((err) => {
+      next(err)
+    })
     
 }
 

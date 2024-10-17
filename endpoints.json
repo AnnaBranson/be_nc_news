@@ -74,6 +74,32 @@
         }
       ]
     }
+  },
+  "PATCH /api/articles/:article_id/comments": {
+    "description": "amends comments when given a inc_vote input",
+    "queries": ["inc_vote"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "body": "This morning, I showered for nine minutes.",
+          "votes": 16,
+          "author": "butter_bridge",
+          "article_id": 1,
+          "created_at": 1595294400000
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes comments when given a comment_id",
+    "queries": ["comment_id"],
+    "exampleResponse": {
+      "comments": [
+        {
+         
+        }
+      ]
+    }
   }
  
 }
