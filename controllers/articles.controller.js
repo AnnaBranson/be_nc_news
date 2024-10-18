@@ -23,6 +23,7 @@ exports.getArticles = (request, response, next) => {
     const { sort_by } = request.query
     const { order } = request.query
     const { topic } = request.query
+
     
     const promises = [selectTopics(), selectArticles(sort_by, order, topic)]
 
@@ -37,7 +38,12 @@ exports.getArticles = (request, response, next) => {
     response.status(200).send({ articles })
     })
   
-    
+
+    selectArticles(sort_by, order, topic)
+     .then((articles) => {
+              response.status(200).send({ articles })
+     })
+
      .catch((err) => {
          next(err)
      })

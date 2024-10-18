@@ -20,6 +20,7 @@ exports.selectEveryCommentInTable = () => {
 }
 
 exports.addComments = (article_id, author, body) => {
+ticket-12-api-articles-topic-query
    if (!author || !body) {
       return Promise.reject({ status: 400, msg: "Missing input"})
    }
@@ -33,6 +34,23 @@ exports.addComments = (article_id, author, body) => {
    })
   
  
+
+   if (!author || !body){
+      return Promise.reject({ status: 400, msg: "Missing input"})
+      //next({ status:400, msg: "Missing input"})
+  }
+  return db
+  .query(
+   `INSERT INTO comments (article_id, author, body) 
+   VALUES ($1, $2, $3)
+   RETURNING *;`,
+   [article_id, author, body]
+  )
+   .then((result) => {
+      return result.rows[0]
+   })
+   
+ main
 }
 
 exports.removeComment = (comment_id) =>{

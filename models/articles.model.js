@@ -2,6 +2,8 @@ const db = require("../db/connection")
 const format = require("pg-format")
 const articles = require("../db/data/test-data/articles")
 const { getTopics } = require ("../controllers/topics.controller")
+const topics = require("../db/data/test-data/topics")
+
 
 
 exports.selectArticlesById = (article_id) => {
@@ -13,21 +15,42 @@ exports.selectArticlesById = (article_id) => {
         }
        return result.rows[0]
     })
+
       
 }
 
 exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
+
+    .catch((err)=> {
+        throw err
+    })
+    
+}
+
+exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
+    
+
     const validSortBys = ["author", "title", "topic", "body", "created_at", "article_img_url" ]
     const validOrder = ["ASC", "DESC"]
     if(!validSortBys.includes(sort_by) || !validOrder.includes(order)){
         return Promise.reject({status:400, msg:"Bad Request"})
     }
+
     
     let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, articles.body, COUNT(comments.article_id)
         AS comment_count
         FROM articles
         LEFT JOIN comments ON articles.article_id = comments.article_id
         `
+
+
+    let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)
+        AS comment_count
+        FROM articles
+        LEFT JOIN comments ON articles.article_id = comments.article_id
+        GROUP BY articles.article_id`
+
+
     let queryVals = []
 
     if (topic) {
@@ -35,15 +58,31 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
         queryVals.push(topic)
     }
 
+
     queryStr += ` GROUP BY articles.article_id, articles.${sort_by} ORDER BY ${sort_by} ${order}`;
     return db
     .query(queryStr, queryVals)
     
     .then((result) => {
        return result.rows
+
+    queryStr += ` ORDER BY ${sort_by} ${order};`
+
+    return db
+    .query(queryStr, queryVals)
+    .then((results) => {
+       return results.rows
+
     })
   
 }
+/*`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)
+        AS comment_count
+        FROM articles
+        LEFT JOIN comments ON articles.article_id = comments.article_id
+        GROUP BY articles.article_id
+        ORDER BY ${sort_by} ${order};
+        // */
 
 exports.changeArticle = (article_id, inc_vote) => {
     return db.query(

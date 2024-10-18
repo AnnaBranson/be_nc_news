@@ -39,6 +39,7 @@ exports.postComments = (request, response, next) => {
     
     const { author, body } = request.body
     const { article_id } = request.params
+
     
     const promises = [selectArticlesById(article_id), addComments(article_id, author, body)]
 
@@ -51,7 +52,22 @@ exports.postComments = (request, response, next) => {
      .catch((err)=> {
         next(err)
      })
-   
+
+
+    const promises = [selectArticlesById(article_id), addComments(article_id, author, body)]
+
+   Promise.all(promises)
+
+     .then((result) => {
+        const comment = result[1]
+         response.status(201).send({ comment })
+     })
+
+    .catch((err) => {
+    
+        next(err)
+     })
+
 }
 
 exports.deleteComment = (request, response, next) => {
@@ -59,7 +75,7 @@ exports.deleteComment = (request, response, next) => {
     
     removeComment(comment_id)
     .then(() => {
-        response.status(204).send()
+        response.status(200).send()
     })
     .catch(next)
     
