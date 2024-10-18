@@ -20,19 +20,19 @@ exports.selectEveryCommentInTable = () => {
 }
 
 exports.addComments = (article_id, author, body) => {
-  
-   const query = 
-   `INSERT INTO comments (article_id, author, body) 
+   if (!author || !body) {
+      return Promise.reject({ status: 400, msg: "Missing input"})
+   }
+
+   return db
+   .query(`INSERT INTO comments (article_id, author, body) 
    VALUES ($1, $2, $3)
-   RETURNING *;`;
-      
-   return db.query(query, [article_id, author, body])
-   .then((result) => {
-      return result.rows[0]
+   RETURNING *;`, [article_id, author, body])
+   .then(({ rows }) => {
+      console.log(rows[0])
+      return rows[0]
    })
-   .catch((err)=> {
-      throw err
-  })
+  
  
 }
 

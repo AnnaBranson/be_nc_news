@@ -147,8 +147,15 @@ describe("/api/articles", () => {
         expect(body.articles.length).toBe(13)
     })
 })
-   
-    //GET 404 - returns error when given an unavailable topic
+    test("GET: 404 - returns an error message when passed an unavailable topic", () => {
+         return request(app)
+            .get("/api/articles?topic=unavailable")
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Not Found!")
+                 })
+})
+    
 })
 
 describe("api/articles/:article_id", () => {

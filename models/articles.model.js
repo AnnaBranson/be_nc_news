@@ -1,6 +1,7 @@
 const db = require("../db/connection")
 const format = require("pg-format")
 const articles = require("../db/data/test-data/articles")
+const { getTopics } = require ("../controllers/topics.controller")
 
 
 exports.selectArticlesById = (article_id) => {
@@ -25,6 +26,9 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
     if(!validSortBys.includes(sort_by) || !validOrder.includes(order)){
         return Promise.reject({status:400, msg:"Bad Request"})
     }
+    // const getTopics = getTopics()
+    // console.log(getTopics)
+    
 
     let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, articles.body, COUNT(comments.article_id)
         AS comment_count
