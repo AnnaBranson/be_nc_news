@@ -39,9 +39,7 @@ exports.postComments = (request, response, next) => {
     
     const { author, body } = request.body
     const { article_id } = request.params
-    // if (!author || !body){
-    //     return next({ status:400, msg: "Missing input"})
-    // }
+    
     const promises = [selectArticlesById(article_id), addComments(article_id, author, body)]
 
     Promise.all(promises)

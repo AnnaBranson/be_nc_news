@@ -1,5 +1,5 @@
 const { selectArticlesById, selectArticles, changeArticle } = require("../models/articles.model")
-
+const {selectTopics} = require("../models/topics.model")
 
 
 
@@ -23,10 +23,21 @@ exports.getArticles = (request, response, next) => {
     const { sort_by } = request.query
     const { order } = request.query
     const { topic } = request.query
-    selectArticles(sort_by, order, topic)
-     .then((articles) => {
-              response.status(200).send({ articles })
-     })
+    
+    const promises = [selectTopics(), selectArticles(sort_by, order, topic)]
+
+    Promise.all(promises)
+    .then(([topics, articles]) => {
+            
+    const validTopics = topics.map(t=>t.slug)
+        
+    if (topic && !validTopics.includes(topic)) {
+        return Promise.reject({ status: 404, msg: "Not Found!" });
+    }
+    response.status(200).send({ articles })
+    })
+  
+    
      .catch((err) => {
          next(err)
      })

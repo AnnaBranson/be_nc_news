@@ -13,11 +13,7 @@ exports.selectArticlesById = (article_id) => {
         }
        return result.rows[0]
     })
-    .catch((err)=> {
-        //console.error(err)
-        throw err
-    })
-    
+      
 }
 
 exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
@@ -26,10 +22,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
     if(!validSortBys.includes(sort_by) || !validOrder.includes(order)){
         return Promise.reject({status:400, msg:"Bad Request"})
     }
-    // const getTopics = getTopics()
-    // console.log(getTopics)
     
-
     let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, articles.body, COUNT(comments.article_id)
         AS comment_count
         FROM articles
@@ -47,7 +40,6 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
     .query(queryStr, queryVals)
     
     .then((result) => {
-        console.log(result.rows.length)
        return result.rows
     })
   

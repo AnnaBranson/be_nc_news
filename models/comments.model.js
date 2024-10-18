@@ -29,7 +29,6 @@ exports.addComments = (article_id, author, body) => {
    VALUES ($1, $2, $3)
    RETURNING *;`, [article_id, author, body])
    .then(({ rows }) => {
-      console.log(rows[0])
       return rows[0]
    })
   
