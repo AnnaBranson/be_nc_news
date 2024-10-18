@@ -178,7 +178,7 @@ describe("/api/articles", () => {
 
 describe("api/articles/:article_id", () => {
   describe("GET: api/articles/:article_id", () =>{
-    test("GET: 200 response with the requested article object", () => {
+    test("GET: 200 responds with the requested article object", () => {
         return request(app)
         .get("/api/articles/1")
         .expect(200)
@@ -196,7 +196,7 @@ describe("api/articles/:article_id", () => {
            })
         })
     });
-    test("GET: 400 response with error message when passed an invalid article ID)", () => {
+    test("GET: 400 responds with error message when passed an invalid article ID)", () => {
         return request(app)
         .get("/api/articles/not-a-number")
         .expect(400)
@@ -204,12 +204,20 @@ describe("api/articles/:article_id", () => {
             expect(msg).toBe("Bad Request!")          
         })
     })
-    test("GET: 404 response with an error message if passed a valid article_id that does not exist in the database ", () => {
+    test("GET: 404 responds with an error message if passed a valid article_id that does not exist in the database ", () => {
         return request(app)
         .get("/api/articles/9999")
         .expect(404)
         .then(({ body: { msg } }) => {
             expect(msg).toBe("Not Found!")          
+        })
+    })
+    test("GET: 200 responds with an additional key of comment_count", () =>{
+        return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.article.comment_count).toBe("11")
         })
     })
 }),
