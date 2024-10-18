@@ -29,6 +29,10 @@ app.get("/api/comments", getEveryCommentInTable)
 
 app.delete("/api/comments/:comment_id", deleteComment)
 
+app.all('*', (request, response) => {
+    response.status(404).send({ msg: 'URL NOT FOUND' });
+  });
+
 app.use((err, request, response, next) =>{
     if (err.code === "22P02"){
         response.status(400).send({msg: "Bad Request!"})
@@ -48,12 +52,9 @@ app.use((err,request, response, next) => {
     } else next (err)
 })
 
-app.use('*', (request, response) => {
-    response.status(404).send({ msg: 'URL NOT FOUND' });
-  });
 
 app.use((err, request, response, next) => {
-response.status(500).send({msg : "500 server error"})
+    response.status(500).send({msg : "500 server error"})
 })
 
   module.exports = app

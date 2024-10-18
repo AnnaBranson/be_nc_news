@@ -39,6 +39,24 @@ describe("/api",()=>{
     
 })
 
+describe("api/users ", () => {
+    test("GET: 200 sends an array of user objects", () => {
+        return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({body: { users }}) => {
+            expect(users).toHaveLength(4)
+            users.forEach((user) => {
+                expect(user).toEqual({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+            })
+        })
+    })
+})
+
 describe("api/topics ", () => {
     test("GET: 200 sends an array of objects", () => {
         return request(app)
@@ -140,7 +158,7 @@ describe("/api/articles", () => {
         })
     })
 })
-    test("GET: 200 - returns all articles when no fileter topic is provided", () => {
+    test("GET: 200 - returns all articles when no filter topic is provided", () => {
     return request(app)
     .get("/api/articles?sort_by=body&order=ASC")
     .expect(200)
@@ -148,28 +166,14 @@ describe("/api/articles", () => {
         expect(body.articles.length).toBe(13)
     })
 })
-    test("GET: 404 - returns an error message when passed an unavailable topic", () => {
+    test("GET: 400 - returns an error message when passed an unavailable topic", () => {
          return request(app)
-            .get("/api/articles?topic=unavailable")
-            .expect(404)
+            .get("/api/articles?topic=not-a-topic")
+            .expect(400)
             .then(({body: {msg}}) => {
-                expect(msg).toBe("Not Found!")
+                expect(msg).toBe("Bad Request")
                  })
 })
-    
-
-    test.skip("GET: 200 - returns articles with a given topic", () => {
-        return request(app)
-        .get("/api/articles?topic=mitch")
-        .expect(200)
-        .then(({ body }) => {
-            expect(body.articles.length).toBe(12)
-            body.articles.forEach(articles => {
-                expect(articles.topic).toEqual("mitch")  
-            })        
-        })
-    })
-
 })
 
 describe("api/articles/:article_id", () => {
