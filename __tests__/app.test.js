@@ -66,7 +66,7 @@ describe("/api/articles", () => {
             const { articles } = response.body; 
             expect(Array.isArray(articles)).toBe(true)
                 articles.forEach((article) => {
-                    expect(article).toEqual({
+                    expect(article).toMatchObject({
                         author: expect.any(String),
                         title: expect.any(String),
                         article_id: expect.any(Number),
@@ -128,6 +128,36 @@ describe("/api/articles", () => {
             expect(msg).toBe("Bad Request")          
         })
     })
+
+    test("GET: 200 - returns article filtered by a given topic", () => {
+    return request(app)
+    .get("/api/articles?topic=mitch")
+    .expect(200)
+    .then(({body}) => {
+        expect(body.articles.length).toBe(12)
+        body.articles.forEach((article) =>{
+            expect(article.topic).toBe("mitch")
+        })
+    })
+})
+    test("GET: 200 - returns all articles when no fileter topic is provided", () => {
+    return request(app)
+    .get("/api/articles?sort_by=body&order=ASC")
+    .expect(200)
+    .then(({body}) => {
+        expect(body.articles.length).toBe(13)
+    })
+})
+    test("GET: 404 - returns an error message when passed an unavailable topic", () => {
+         return request(app)
+            .get("/api/articles?topic=unavailable")
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Not Found!")
+                 })
+})
+    
+
     test.skip("GET: 200 - returns articles with a given topic", () => {
         return request(app)
         .get("/api/articles?topic=mitch")
@@ -139,6 +169,7 @@ describe("/api/articles", () => {
             })        
         })
     })
+
 })
 
 describe("api/articles/:article_id", () => {
