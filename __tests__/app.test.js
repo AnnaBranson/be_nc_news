@@ -66,7 +66,7 @@ describe("/api/articles", () => {
             const { articles } = response.body; 
             expect(Array.isArray(articles)).toBe(true)
                 articles.forEach((article) => {
-                    expect(article).toEqual({
+                    expect(article).toMatchObject({
                         author: expect.any(String),
                         title: expect.any(String),
                         article_id: expect.any(Number),
@@ -139,7 +139,15 @@ describe("/api/articles", () => {
         })
     })
 })
-    //GET: 200 - all articles return when no filter supplied 
+    test("GET: 200 - returns all articles when no fileter topic is provided", () => {
+    return request(app)
+    .get("/api/articles?sort_by=body&order=ASC")
+    .expect(200)
+    .then(({body}) => {
+        expect(body.articles.length).toBe(13)
+    })
+})
+   
     //GET 404 - returns error when given an unavailable topic
 })
 

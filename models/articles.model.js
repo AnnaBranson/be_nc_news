@@ -26,7 +26,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
         return Promise.reject({status:400, msg:"Bad Request"})
     }
 
-    let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id)
+    let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, articles.body, COUNT(comments.article_id)
         AS comment_count
         FROM articles
         LEFT JOIN comments ON articles.article_id = comments.article_id
@@ -38,10 +38,12 @@ exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
         queryVals.push(topic)
     }
 
-    queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+    queryStr += ` GROUP BY articles.article_id, articles.${sort_by} ORDER BY ${sort_by} ${order}`;
     return db
     .query(queryStr, queryVals)
+    
     .then((result) => {
+        console.log(result.rows.length)
        return result.rows
     })
   
