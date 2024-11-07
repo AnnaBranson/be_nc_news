@@ -23,7 +23,7 @@ exports.selectArticlesById = (article_id) => {
 exports.selectArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
     const validSortBys = ["author", "title", "topic", "body", "created_at", "article_img_url" ]
     const validOrder = ["ASC", "DESC"]
-    const validTopics = ["mitch", "cats", "paper"]
+    const validTopics = ["mitch", "cats", "paper", "coding", 'cooking', "football"]
     if(!validSortBys.includes(sort_by) || !validOrder.includes(order)){
         return Promise.reject({status:400, msg:"Bad Request"})
     }
